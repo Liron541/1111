@@ -14,6 +14,7 @@
             app:destination="@id/noteListFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true"/>
+
     </fragment>
 
     <fragment
@@ -21,6 +22,12 @@
         android:name="com.cs407.lab5_milestone.NoteListFragment"
         android:label="@string/note_list_screen"
         tools:layout="@layout/fragment_note_list">
+        <argument
+            android:name="userId"
+            app:argType="integer" />
+        <argument
+            android:name="username"
+            app:argType="string" />
         <action
             android:id="@+id/action_noteListFragment_to_noteContentFragment"
             app:destination="@id/noteContentFragment"/>
@@ -28,7 +35,7 @@
             android:id="@+id/action_noteListFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/noteListFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -40,5 +47,9 @@
             android:name="noteId"
             app:argType="integer"
             android:defaultValue="0"/>
+        <argument
+            android:name="userId"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 </navigation>
