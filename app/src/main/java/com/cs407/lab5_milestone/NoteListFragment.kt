@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Calendar
 import java.util.Date
 
@@ -48,6 +49,7 @@ class NoteListFragment : Fragment() {
     private var isAccountDeletion = false
     private var userId: Int = 0
     private lateinit var username: String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +79,7 @@ class NoteListFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         val view = inflater.inflate(R.layout.fragment_note_list, container, false)
+
         greetingTextView = view.findViewById(R.id.greetingTextView)
         noteRecyclerView = view.findViewById(R.id.noteRecyclerView)
         sharedPrefFile = getString(R.string.userPasswdKV)
@@ -169,6 +172,14 @@ class NoteListFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             val noteDao = NoteDatabase.getDatabase(requireContext()).noteDao()
             noteDao.deleteNoteById(note.noteId)
+
+            // Delete the associated file if it exists
+            note.notePath?.let { path ->
+                val file = File(path)
+                if (file.exists()) {
+                    file.delete()
+                }
+            }
 
             // Fetch updated notes and refresh the RecyclerView
             val updatedNotes = noteDao.getNotesForUser(userId)

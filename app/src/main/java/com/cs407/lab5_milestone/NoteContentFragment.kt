@@ -1,6 +1,7 @@
 package com.cs407.lab5_milestone
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
@@ -13,6 +14,8 @@ import com.cs407.lab5_milestone.data.NoteDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Calendar
 
 class NoteContentFragment : Fragment() {
@@ -24,6 +27,7 @@ class NoteContentFragment : Fragment() {
     private val args: NoteContentFragmentArgs by navArgs()
     private var noteId: Int = 0
     private var userId: Int = 0
+    private var notePath: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,9 +66,28 @@ class NoteContentFragment : Fragment() {
                 // If the note exists, populate the UI with its details
                 note?.let {
                     titleEditText.setText(it.noteTitle)
-                    contentEditText.setText(it.noteDetail)
+
+                    // Load content from the file if notePath is present
+                    val noteContent = if (!it.notePath.isNullOrEmpty()) {
+                        notePath = it.notePath
+                        readContentFromFile(it.notePath)
+                    } else {
+                        it.noteDetail ?: ""
+                    }
+
+                    contentEditText.setText(noteContent)
                 }
             }
+        }
+    }
+
+    // Helper function to read content from a file
+    private fun readContentFromFile(path: String): String {
+        val file = File(path)
+        return if (file.exists()) {
+            file.readText()
+        } else {
+            ""
         }
     }
 
@@ -72,16 +95,29 @@ class NoteContentFragment : Fragment() {
         // Get the content of the title and detail fields
         val noteTitle = titleEditText.text.toString().trim()
         val noteDetail = contentEditText.text.toString().trim()
-        val noteAbstract = noteDetail.split("\n").firstOrNull()?.take(20) ?: ""
+        val noteAbstract = if (noteDetail.isNotEmpty()) {
+            noteDetail.split("\n").firstOrNull()?.take(20) ?: ""
+        } else {
+            ""
+        }
+        Log.d("NoteSave", "noteDetail length before saving: ${noteDetail.length}")
+
+
+        val newNotePath: String? = if (noteDetail.length > 1024) {
+            saveContentToFile(noteDetail, existingFilePath = notePath)
+        } else {
+            null
+        }
+        Log.d("NoteSave", "Saving note: noteId=$noteId, notePath=$newNotePath")
 
         // Create a new Note object to insert or update
         val note = Note(
             noteId = if (noteId == 0) 0 else noteId,
             userId = userId,
             noteTitle = noteTitle,
-            noteDetail = noteDetail,
+            noteDetail = if (newNotePath == null) noteDetail else null,
             noteAbstract = noteAbstract,
-            notePath = null,
+            notePath = newNotePath,
             lastEdited = Calendar.getInstance().time
         )
 
@@ -95,6 +131,23 @@ class NoteContentFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
+    }
+
+    // Helper function
+    private fun saveContentToFile(content: String, existingFilePath: String?): String {
+        val file: File = if (!existingFilePath.isNullOrEmpty()) {
+            File(existingFilePath)
+        } else {
+            // Create a new file if no existing path
+            val fileName = "note-$userId-${if (noteId == 0) "new" else noteId}-${System.currentTimeMillis()}.txt"
+            File(requireContext().filesDir, fileName)
+        }
+
+        FileOutputStream(file).use { output ->
+            output.write(content.toByteArray())
+        }
+        Log.d("NoteFile", "File saved at: ${file.absolutePath}, Content size: ${content.length}")
+        return file.absolutePath
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

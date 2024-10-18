@@ -26,6 +26,13 @@ import com.cs407.lab5_milestone.R
 import java.util.Date
 
 
+data class NoteSummary(
+    val noteId: Int,
+    val noteTitle: String,
+    val noteAbstract: String,
+    val lastEdited: Date
+)
+
 // Converters for Date type
 class Converters {
     @TypeConverter
@@ -88,6 +95,9 @@ interface NoteDao {
 
     @Query("SELECT * FROM note WHERE noteId = :noteId")
     suspend fun getNoteById(noteId: Int): Note?
+
+    @Query("SELECT noteId, noteTitle, noteAbstract, lastEdited FROM note WHERE userId = :userId ORDER BY lastEdited DESC")
+    fun getNoteListsByUserIdPaged(userId: Int): PagingSource<Int, NoteSummary>
 }
 
 // Define the Room Database

@@ -1,5 +1,6 @@
 package com.cs407.lab5_milestone
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ class NoteAdapter(
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = notes[position]
+        Log.d("Pagination", "$position, noteId: ${note.noteId}, noteTitle: ${note.noteTitle}, noteAbstract: ${note.noteAbstract}")
         holder.bind(note)
         holder.itemView.setOnClickListener { onNoteClick(note) }
         holder.itemView.setOnLongClickListener {
