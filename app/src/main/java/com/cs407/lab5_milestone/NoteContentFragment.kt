@@ -5,7 +5,10 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -23,7 +26,6 @@ class NoteContentFragment : Fragment() {
     private lateinit var titleEditText: EditText
     private lateinit var contentEditText: EditText
     private lateinit var saveButton: Button
-    private lateinit var backButton: Button
     private val args: NoteContentFragmentArgs by navArgs()
     private var noteId: Int = 0
     private var userId: Int = 0
@@ -38,7 +40,6 @@ class NoteContentFragment : Fragment() {
         titleEditText = view.findViewById(R.id.titleEditText)
         contentEditText = view.findViewById(R.id.contentEditText)
         saveButton = view.findViewById(R.id.saveButton)
-        backButton = view.findViewById(R.id.backButton)
 
         noteId = args.noteId
         userId = args.userId
@@ -48,10 +49,6 @@ class NoteContentFragment : Fragment() {
             loadNoteDetails(noteId)
         }
 
-        // Set up the save button to save the note
-        saveButton.setOnClickListener {
-            saveNote()
-        }
         
         return view
     }
@@ -153,10 +150,27 @@ class NoteContentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Handle the back (cancel) button
-        backButton.setOnClickListener {
-            findNavController().popBackStack()
+        if (activity is AppCompatActivity) {
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
+
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // You can inflate your menu here if needed
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    android.R.id.home -> {
+                        // Navigate back to NoteListFragment without saving the note
+                        findNavController().popBackStack()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
 
         // Handle the save button
         saveButton.setOnClickListener {

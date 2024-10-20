@@ -98,6 +98,7 @@ interface NoteDao {
 
     @Query("SELECT noteId, noteTitle, noteAbstract, lastEdited FROM note WHERE userId = :userId ORDER BY lastEdited DESC")
     fun getNoteListsByUserIdPaged(userId: Int): PagingSource<Int, NoteSummary>
+
 }
 
 // Define the Room Database

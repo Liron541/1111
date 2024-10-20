@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -95,6 +96,12 @@ class NoteListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        //remove back button when back to Note List
+        if (activity is AppCompatActivity) {
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        }
 
         // Initialize the FloatingActionButton
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
@@ -232,7 +239,6 @@ class NoteListFragment : Fragment() {
 
                 // Navigate back to the login screen on the main thread
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_noteListFragment_to_loginFragment)
                 }
             }
@@ -251,22 +257,6 @@ class NoteListFragment : Fragment() {
         navigateToLoginScreen()
         if (!isAccountDeletion) {
             Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun deleteAccount(sharedPreferences: SharedPreferences, username: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val userDao = NoteDatabase.getDatabase(requireContext()).userDao()
-            userDao.deleteUserByUsername(username)
-
-            with(sharedPreferences.edit()) {
-                remove("current_user")
-                apply()
-            }
-
-            withContext(Dispatchers.Main) {
-                navigateToLoginScreen()
-            }
         }
     }
 
