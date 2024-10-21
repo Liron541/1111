@@ -2,7 +2,6 @@ package com.cs407.lab5_milestone
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -35,7 +34,7 @@ data class Note(
     val noteTitle: String,
     val noteAbstract: String,
     val noteDetail: String,
-    val notePath: String?, // Optional path if you have any associated file or image
+    val notePath: String?,
     val lastEdited: Date
 )
 
@@ -47,10 +46,7 @@ class NoteListFragment : Fragment() {
     private lateinit var greetingTextView: TextView
     private lateinit var noteRecyclerView: RecyclerView
     private lateinit var sharedPrefFile: String
-    private var isAccountDeletion = false
     private var userId: Int = 0
-    private lateinit var username: String
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +99,6 @@ class NoteListFragment : Fragment() {
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }
 
-        // Initialize the FloatingActionButton
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
 
 
@@ -146,7 +141,7 @@ class NoteListFragment : Fragment() {
         }
     }
 
-    // In NoteListFragment.kt
+
     private fun showDeleteDialog(note: com.cs407.lab5_milestone.data.Note) {
         // Create a BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(requireContext())
@@ -195,9 +190,6 @@ class NoteListFragment : Fragment() {
             }
         }
     }
-
-
-
 
     private fun setupMenu() {
         val menuHost = requireActivity()
@@ -255,9 +247,6 @@ class NoteListFragment : Fragment() {
             apply()
         }
         navigateToLoginScreen()
-        if (!isAccountDeletion) {
-            Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun navigateToLoginScreen() {

@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.cs407.lab5_milestone.data.Note
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class NoteAdapter(
     private var notes: MutableList<Note>,
@@ -46,7 +48,11 @@ class NoteAdapter(
         fun bind(note: Note) {
             noteTitleTextView.text = note.noteTitle
             noteAbstractTextView.text = note.noteAbstract
-            noteDateTextView.text = note.lastEdited.toString()
+            val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            val formattedDate = note.lastEdited.let { dateFormatter.format(it) }
+
+            // Set the formatted date in the TextView
+            noteDateTextView.text = formattedDate
         }
     }
 }

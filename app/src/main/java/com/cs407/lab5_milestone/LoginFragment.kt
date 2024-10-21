@@ -1,9 +1,7 @@
 package com.cs407.lab5_milestone
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
@@ -81,7 +79,6 @@ class LoginFragment : Fragment() {
             } else {
                 val userId = userDao.insertUser(User(username = username, passwordHash = hashedPassword)).toInt()
 
-                // Store the current user in SharedPreferences after signup
                 with(sharedPreferences.edit()) {
                     putString("current_user", username)
                     apply()

@@ -36,13 +36,13 @@ data class NoteSummary(
 // Converters for Date type
 class Converters {
     @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
+    fun fromTimestamp(value: Long): Date {
+        return Date(value)
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
+    fun dateToTimestamp(date: Date): Long {
+        return date.time
     }
 }
 
@@ -50,7 +50,7 @@ class Converters {
 @Entity(tableName = "user")
 data class User(
     @PrimaryKey(autoGenerate = true)
-    val userId: Int = 0, // AUTOINCREMENT equivalent
+    val userId: Int = 0,
     val username: String,
     val passwordHash: String
 )
@@ -59,7 +59,7 @@ data class User(
 @Entity(tableName = "note")
 data class Note(
     @PrimaryKey(autoGenerate = true) val noteId: Int = 0,
-    val userId: Int, // Foreign key reference to User
+    val userId: Int,
     val noteTitle: String,
     val noteAbstract: String,
     val noteDetail: String?,

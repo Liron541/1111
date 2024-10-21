@@ -1,7 +1,6 @@
 package com.cs407.lab5_milestone
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
@@ -49,7 +48,6 @@ class NoteContentFragment : Fragment() {
             loadNoteDetails(noteId)
         }
 
-        
         return view
     }
 
@@ -97,15 +95,12 @@ class NoteContentFragment : Fragment() {
         } else {
             ""
         }
-        Log.d("NoteSave", "noteDetail length before saving: ${noteDetail.length}")
-
 
         val newNotePath: String? = if (noteDetail.length > 1024) {
             saveContentToFile(noteDetail, existingFilePath = notePath)
         } else {
             null
         }
-        Log.d("NoteSave", "Saving note: noteId=$noteId, notePath=$newNotePath")
 
         // Create a new Note object to insert or update
         val note = Note(
@@ -143,7 +138,7 @@ class NoteContentFragment : Fragment() {
         FileOutputStream(file).use { output ->
             output.write(content.toByteArray())
         }
-        Log.d("NoteFile", "File saved at: ${file.absolutePath}, Content size: ${content.length}")
+
         return file.absolutePath
     }
 
@@ -156,7 +151,6 @@ class NoteContentFragment : Fragment() {
 
         requireActivity().addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // You can inflate your menu here if needed
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
